@@ -1,0 +1,9 @@
+# Ignore files used for building local flatpak:
+/.flatpak-builder
+/com.hack_computer.Libquest.json
+
+# Ignore files used for building custom flatpak bundles:
+/repo
+/build
+/*.flatpak-bundle
+/*.flatpak

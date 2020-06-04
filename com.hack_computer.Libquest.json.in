@@ -1,0 +1,23 @@
+{
+  "app-id": "com.hack_computer.Libquest",
+  "runtime": "org.gnome.Platform",
+  "runtime-version": "3.36",
+  "branch": "@BRANCH@",
+  "sdk": "org.gnome.Sdk",
+  "command": "com.hack_computer.Libquest",
+  "finish-args": [
+    "--share=ipc",
+    "--socket=session-bus",
+    "--own-name=com.hack_computer.Libquest"
+  ],
+  "modules": [
+    {
+      "name": "libquest",
+      "buildsystem": "meson",
+      "run-tests": "@RUN_TESTS@",
+      "sources": [
+        {"type": "dir", "path": "."}
+      ]
+    }
+  ]
+}
