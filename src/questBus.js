@@ -96,16 +96,18 @@ var QuestBus = GObject.registerClass({
     }
 
     dbusRegister() {
-        const appObjectPath = Gio.Application.get_default().get_dbus_object_path();
-        // FIXME add "quest id to dbus path" method
-        const objectPath = `${appObjectPath}/quest/${this.quest_id.replace(/-/gi, '_')}`;
         this._dbus = Gio.DBusExportedObject.wrapJSObject(DBUS_INTERFACE, this);
 
         try {
-            this._dbus.export(Gio.DBus.session, objectPath);
+            this._dbus.export(Gio.DBus.session, this.dbusPath);
         } catch (e) {
             logError(e);
         }
+    }
+
+    get dbusPath() {
+        const appObjectPath = Gio.Application.get_default().get_dbus_object_path();
+        return `${appObjectPath}/quest/${this.quest_id.replace(/-/gi, '_')}`;
     }
 
     dbusUnregister() {

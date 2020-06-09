@@ -13,6 +13,7 @@ const DBUS_INTERFACE = `
     </method>
     <method name="LoadQuest">
       <arg type='s' name='questID' direction='in'/>
+      <arg type='s' name='questPath' direction='out'/>
     </method>
   </interface>
 </node>`;
@@ -59,6 +60,7 @@ var LibQuestApp = GObject.registerClass(class LibQuestApp extends Gio.Applicatio
         const questBus = new QuestBus({quest_id: questID});
         this._questBusList[questID] = questBus;
         log(`Quest ${questBus.quest_id} loaded.`);
+        return questBus.dbusPath;
     }
 
     // D-Bus implementation
