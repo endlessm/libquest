@@ -1,5 +1,5 @@
 option('jasmine_junit_reports_dir', type: 'string',
     description: 'Where to put test reports')
 option('session-bus-services-dir',
-       description: 'the directory to install D-Bus services',
-       type: 'string')
+    description: 'The directory to install D-Bus services',
+    type: 'string')
