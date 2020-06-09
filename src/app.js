@@ -32,6 +32,15 @@ var LibQuestApp = GObject.registerClass(class LibQuestApp extends Gio.Applicatio
         this.dbusRegister();
     }
 
+    vfunc_startup() {
+        // Call hold/release here, so the inactivity-timeout is used
+        // correctly (as the overridden value is only used after a
+        // release call).
+        this.hold();
+        this.release();
+        super.vfunc_startup();
+    }
+
     shutdown() {
         this.dbusUnregister();
         this._questBusList.forEach(q => {
