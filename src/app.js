@@ -8,10 +8,10 @@ const {QuestBus} = imports.questBus;
 const DBUS_INTERFACE = `
 <node>
   <interface name="com.hack_computer.Libquest">
-    <method name="listAvailableQuests">
+    <method name="ListAvailableQuests">
       <arg type='as' name='quests' direction='out'/>
     </method>
-    <method name="loadQuest">
+    <method name="LoadQuest">
       <arg type='s' name='questID' direction='in'/>
     </method>
   </interface>
@@ -55,7 +55,7 @@ var LibQuestApp = GObject.registerClass(class LibQuestApp extends Gio.Applicatio
     }
 
     // D-Bus implementation
-    loadQuest(questID) {
+    LoadQuest(questID) {
         const questBus = new QuestBus({quest_id: questID});
         this._questBusList[questID] = questBus;
         log(`Quest ${questBus.quest_id} loaded.`);
@@ -63,7 +63,7 @@ var LibQuestApp = GObject.registerClass(class LibQuestApp extends Gio.Applicatio
 
     // D-Bus implementation
     // eslint-disable-next-line class-methods-use-this
-    listAvailableQuests() {
+    ListAvailableQuests() {
         // FIXME
         return ['p5-quest'];
     }

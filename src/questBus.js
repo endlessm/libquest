@@ -9,23 +9,23 @@ const {Quest} = imports.quest;
 const DBUS_INTERFACE = `
 <node>
   <interface name="com.hack_computer.Libquest.Quest">
-    <method name="continueStory">
+    <method name="ContinueStory">
       <arg type='av' name='dialogue' direction='out'/>
       <arg type='av' name='choices' direction='out'/>
     </method>
-    <method name="choose">
+    <method name="Choose">
       <arg type='u' name='choiceIndex' direction='in'/>
     </method>
-    <method name="hasEnded">
+    <method name="HasEnded">
       <arg type='b' name='hasEnded' direction='out'/>
     </method>
-    <method name="restart">
+    <method name="Restart">
     </method>
-    <method name="updateStoryVariable">
+    <method name="UpdateStoryVariable">
       <arg type='s' name='name' direction='in'/>
       <arg type='v' name='newValue' direction='in'/>
     </method>
-    <method name="getStoryVariable">
+    <method name="GetStoryVariable">
       <arg type='s' name='name' direction='in'/>
       <arg type='v' name='value' direction='out'/>
     </method>
@@ -120,7 +120,7 @@ var QuestBus = GObject.registerClass({
     }
 
     // D-Bus implementation
-    continueStory() {
+    ContinueStory() {
         const {dialogue, choices} = this._quest.continueStory();
         logQuest(dialogue, choices);
         return [
@@ -130,30 +130,30 @@ var QuestBus = GObject.registerClass({
     }
 
     // D-Bus implementation
-    choose(choiceIndex) {
+    Choose(choiceIndex) {
         this._quest.choose(choiceIndex);
         log(`${this.quest_id}: Chosen ${choiceIndex}`);
     }
 
     // D-Bus implementation
     // FIXME use the D-Bus property
-    hasEnded() {
+    HasEnded() {
         return this._quest.hasEnded;
     }
 
-    restart() {
+    Restart() {
         this._quest.restart();
         log(`${this.quest_id}: Restarted.`);
     }
 
     // D-Bus implementation
-    updateStoryVariable(name, newValue) {
+    UpdateStoryVariable(name, newValue) {
         this._quest.updateStoryVariable(name, newValue);
         log(`${this.quest_id}: Variable ${name} changed to ${newValue}`);
     }
 
     // D-Bus implementation
-    getStoryVariable(name) {
+    GetStoryVariable(name) {
         const value = this._quest.getStoryVariable(name);
         log(`${this.quest_id}: Variable ${name} is ${value}`);
         return value;
