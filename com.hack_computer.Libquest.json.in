@@ -15,6 +15,9 @@
       "name": "libquest",
       "buildsystem": "meson",
       "run-tests": "@RUN_TESTS@",
+      "config-opts": [
+        "-Dsession-bus-services-dir=/app/share/dbus-1/services"
+      ],
       "sources": [
         {"type": "dir", "path": "."}
       ]
