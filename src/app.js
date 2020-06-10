@@ -8,11 +8,12 @@ const {QuestBus} = imports.questBus;
 const DBUS_INTERFACE = `
 <node>
   <interface name="com.hack_computer.Libquest">
-    <method name="listAvailableQuests">
+    <method name="ListAvailableQuests">
       <arg type='as' name='quests' direction='out'/>
     </method>
-    <method name="loadQuest">
+    <method name="LoadQuest">
       <arg type='s' name='questID' direction='in'/>
+      <arg type='s' name='questPath' direction='out'/>
     </method>
   </interface>
 </node>`;
@@ -29,6 +30,15 @@ var LibQuestApp = GObject.registerClass(class LibQuestApp extends Gio.Applicatio
 
         this._questBusList = [];
         this.dbusRegister();
+    }
+
+    vfunc_startup() {
+        // Call hold/release here, so the inactivity-timeout is used
+        // correctly (as the overridden value is only used after a
+        // release call).
+        this.hold();
+        this.release();
+        super.vfunc_startup();
     }
 
     shutdown() {
@@ -55,15 +65,16 @@ var LibQuestApp = GObject.registerClass(class LibQuestApp extends Gio.Applicatio
     }
 
     // D-Bus implementation
-    loadQuest(questID) {
+    LoadQuest(questID) {
         const questBus = new QuestBus({quest_id: questID});
         this._questBusList[questID] = questBus;
         log(`Quest ${questBus.quest_id} loaded.`);
+        return questBus.dbusPath;
     }
 
     // D-Bus implementation
     // eslint-disable-next-line class-methods-use-this
-    listAvailableQuests() {
+    ListAvailableQuests() {
         // FIXME
         return ['p5-quest'];
     }
