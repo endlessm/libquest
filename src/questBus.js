@@ -16,9 +16,6 @@ const DBUS_INTERFACE = `
     <method name="Choose">
       <arg type='u' name='choiceIndex' direction='in'/>
     </method>
-    <method name="HasEnded">
-      <arg type='b' name='hasEnded' direction='out'/>
-    </method>
     <method name="Restart">
     </method>
     <method name="UpdateStoryVariable">
@@ -138,8 +135,7 @@ var QuestBus = GObject.registerClass({
     }
 
     // D-Bus implementation
-    // FIXME use the D-Bus property
-    HasEnded() {
+    get hasEnded() {
         return this._quest.hasEnded;
     }
 
