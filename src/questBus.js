@@ -26,7 +26,7 @@ const DBUS_INTERFACE = `
       <arg type='s' name='name' direction='in'/>
       <arg type='v' name='value' direction='out'/>
     </method>
-    <property name="mainCharacter" type="s" access="read"/>
+    <property name="globalTags" type="as" access="read"/>
     <property name="hasEnded" type="b" access="read"/>
   </interface>
 </node>`;
@@ -80,10 +80,6 @@ var QuestBus = GObject.registerClass({
         'has-ended': GObject.ParamSpec.boolean('has-ended', 'Has ended?',
             'Whether the quest has ended',
             GObject.ParamFlags.READWRITE, false),
-
-        'main-character': GObject.ParamSpec.string('main-character', 'Main Character',
-            'The main character telling the story',
-            GObject.ParamFlags.READWRITE, ''),
     },
 }, class QuestBus extends GObject.Object {
     _init(props = {}) {
@@ -116,6 +112,11 @@ var QuestBus = GObject.registerClass({
         const questContent = _readQuestContent(this.quest_id);
         this._quest = new Quest();
         this._quest.setup(questContent);
+    }
+
+    // D-Bus implementation
+    get globalTags() {
+        return this._quest.globalTags;
     }
 
     // D-Bus implementation

@@ -56,6 +56,10 @@ var Quest = GObject.registerClass(class Quest extends GObject.Object {
         return !this.story.canContinue && !this.story.currentChoices.length;
     }
 
+    get globalTags() {
+        return this.story.globalTags || [];
+    }
+
     restart() {
         this.story.ResetState();
     }
