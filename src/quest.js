@@ -3,8 +3,6 @@
 const {Story} = imports.ink;
 const {GObject} = imports.gi;
 
-const defaultCharacter = 'ada';
-
 var Quest = GObject.registerClass(class Quest extends GObject.Object {
     _init(props) {
         super._init(props);
@@ -12,8 +10,6 @@ var Quest = GObject.registerClass(class Quest extends GObject.Object {
 
     setup(storyContent) {
         this.story = new Story(storyContent);
-        // FIXME: extract from global tags
-        this.mainCharacter = defaultCharacter;
     }
 
     getDialogue() {
@@ -22,8 +18,7 @@ var Quest = GObject.registerClass(class Quest extends GObject.Object {
         if (text.trim()) {
             return {
                 text: text.trim(),
-                // FIXME: try extracting it from current tags
-                character: this.mainCharacter,
+                tags: this.story.currentTags || [],
             };
         }
         return null;
@@ -54,6 +49,10 @@ var Quest = GObject.registerClass(class Quest extends GObject.Object {
 
     get hasEnded() {
         return !this.story.canContinue && !this.story.currentChoices.length;
+    }
+
+    get globalTags() {
+        return this.story.globalTags || [];
     }
 
     restart() {

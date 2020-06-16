@@ -16,9 +16,6 @@ const DBUS_INTERFACE = `
     <method name="Choose">
       <arg type='u' name='choiceIndex' direction='in'/>
     </method>
-    <method name="HasEnded">
-      <arg type='b' name='hasEnded' direction='out'/>
-    </method>
     <method name="Restart">
     </method>
     <method name="UpdateStoryVariable">
@@ -29,7 +26,7 @@ const DBUS_INTERFACE = `
       <arg type='s' name='name' direction='in'/>
       <arg type='v' name='value' direction='out'/>
     </method>
-    <property name="mainCharacter" type="s" access="read"/>
+    <property name="globalTags" type="as" access="read"/>
     <property name="hasEnded" type="b" access="read"/>
   </interface>
 </node>`;
@@ -54,7 +51,7 @@ function _readQuestContent(questID) {
 function _dialogueToVariant(dialogue) {
     return new GLib.Variant('a{sv}', {
         text: new GLib.Variant('s', dialogue.text),
-        character: new GLib.Variant('s', dialogue.character),
+        tags: new GLib.Variant('as', dialogue.tags),
     });
 }
 
@@ -67,7 +64,7 @@ function _choiceToVariant(choice) {
 
 function logQuest(dialogue, choices) {
     dialogue.forEach(d => {
-        log(`${d.character}: ${d.text}`);
+        log(`${d.text} | ${d.tags}`);
     });
 
     choices.forEach(c => {
@@ -83,10 +80,6 @@ var QuestBus = GObject.registerClass({
         'has-ended': GObject.ParamSpec.boolean('has-ended', 'Has ended?',
             'Whether the quest has ended',
             GObject.ParamFlags.READWRITE, false),
-
-        'main-character': GObject.ParamSpec.string('main-character', 'Main Character',
-            'The main character telling the story',
-            GObject.ParamFlags.READWRITE, ''),
     },
 }, class QuestBus extends GObject.Object {
     _init(props = {}) {
@@ -122,6 +115,11 @@ var QuestBus = GObject.registerClass({
     }
 
     // D-Bus implementation
+    get globalTags() {
+        return this._quest.globalTags;
+    }
+
+    // D-Bus implementation
     ContinueStory() {
         const {dialogue, choices} = this._quest.continueStory();
         logQuest(dialogue, choices);
@@ -138,8 +136,7 @@ var QuestBus = GObject.registerClass({
     }
 
     // D-Bus implementation
-    // FIXME use the D-Bus property
-    HasEnded() {
+    get hasEnded() {
         return this._quest.hasEnded;
     }
 
