@@ -51,7 +51,7 @@ function _readQuestContent(questID) {
 function _dialogueToVariant(dialogue) {
     return new GLib.Variant('a{sv}', {
         text: new GLib.Variant('s', dialogue.text),
-        character: new GLib.Variant('s', dialogue.character),
+        tags: new GLib.Variant('as', dialogue.tags),
     });
 }
 
@@ -64,7 +64,7 @@ function _choiceToVariant(choice) {
 
 function logQuest(dialogue, choices) {
     dialogue.forEach(d => {
-        log(`${d.character}: ${d.text}`);
+        log(`${d.text} | ${d.tags}`);
     });
 
     choices.forEach(c => {
