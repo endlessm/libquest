@@ -66,7 +66,14 @@ var LibQuestApp = GObject.registerClass(class LibQuestApp extends Gio.Applicatio
 
     // D-Bus implementation
     LoadQuest(questID) {
-        const questBus = new QuestBus({quest_id: questID});
+        let questBus = this._questBusList[questID];
+        if (questBus) {
+            questBus.Restart();
+            log(`Quest ${questBus.quest_id} already loaded.`);
+            return questBus.dbusPath;
+        }
+
+        questBus = new QuestBus({quest_id: questID});
         this._questBusList[questID] = questBus;
         log(`Quest ${questBus.quest_id} loaded.`);
         return questBus.dbusPath;
