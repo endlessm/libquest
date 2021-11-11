@@ -69,9 +69,7 @@ var LibQuestApp = GObject.registerClass(class LibQuestApp extends Gio.Applicatio
     LoadQuest(questID, questStory) {
         let questBus = this._questBusList[questID];
         if (questBus) {
-            questBus.Restart();
-            log(`Quest ${questBus.quest_id} already loaded.`);
-            return questBus.dbusPath;
+            questBus.dbusUnregister();
         }
 
         questBus = new QuestBus({quest_id: questID, quest_story: questStory});
