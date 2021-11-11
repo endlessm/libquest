@@ -35,9 +35,14 @@ const QUESTS_PATH = GLib.build_filenamev([pkg.pkgdatadir, 'quests']);
 const ALTERNATIVE_QUESTS_PATH = GLib.build_filenamev(
      [GLib.get_user_data_dir(), 'quests']);
 
-function _readQuestContent(questID) {
+function _readQuestContent(questID, questStory) {
+    let storyPath = questStory;
     let questName = `${questID}.ink.json`;
-    let storyPath = GLib.build_filenamev([QUESTS_PATH, questName]);
+
+    if (!storyPath) {
+        storyPath = GLib.build_filenamev([QUESTS_PATH, questName]);
+    }
+
     let storyFile = Gio.File.new_for_path(storyPath);
     if (!storyFile.query_exists(null)) {
         storyPath = GLib.build_filenamev([ALTERNATIVE_QUESTS_PATH, questName]);
@@ -90,6 +95,10 @@ var QuestBus = GObject.registerClass({
         'quest-id': GObject.ParamSpec.string('quest-id', 'Quest ID', 'The quest ID',
             GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT_ONLY, ''),
 
+        'quest-story': GObject.ParamSpec.string('quest-story', 'Quest Story',
+            'The quest ink.json file path',
+            GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT_ONLY, ''),
+
         'has-ended': GObject.ParamSpec.boolean('has-ended', 'Has ended?',
             'Whether the quest has ended',
             GObject.ParamFlags.READWRITE, false),
@@ -122,7 +131,7 @@ var QuestBus = GObject.registerClass({
     }
 
     load() {
-        const questContent = _readQuestContent(this.quest_id);
+        const questContent = _readQuestContent(this.quest_id, this.quest_story);
         this._quest = new Quest();
         this._quest.setup(questContent);
     }
