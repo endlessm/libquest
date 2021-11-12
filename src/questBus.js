@@ -32,16 +32,34 @@ const DBUS_INTERFACE = `
 </node>`;
 
 const QUESTS_PATH = GLib.build_filenamev([pkg.pkgdatadir, 'quests']);
-// FIXME: Use it, see below.
-// const ALTERNATIVE_QUESTS_PATH = GLib.build_filenamev(
-//     [GLib.get_user_data_dir(), 'quests']);
+const ALTERNATIVE_QUESTS_PATH = GLib.build_filenamev(
+     [GLib.get_user_data_dir(), 'quests']);
 
-function _readQuestContent(questID) {
-    // FIXME: Try loading quests from the alternative quests path,
-    // like Clubhouse does:
-    const storyPath = GLib.build_filenamev([QUESTS_PATH, `${questID}.ink.json`]);
+function _readQuestContent(questID, questStory) {
+    let storyPath = questStory;
+    let questName = `${questID}.ink.json`;
 
-    const storyFile = Gio.File.new_for_path(storyPath);
+    if (!storyPath) {
+        storyPath = GLib.build_filenamev([QUESTS_PATH, questName]);
+    }
+
+    let storyFile = Gio.File.new_for_path(storyPath);
+    if (!storyFile.query_exists(null)) {
+        storyPath = GLib.build_filenamev([ALTERNATIVE_QUESTS_PATH, questName]);
+        storyFile = Gio.File.new_for_path(storyPath);
+    }
+    if (!storyFile.query_exists(null)) {
+        storyPath = GLib.build_filenamev([
+            ALTERNATIVE_QUESTS_PATH,
+            questID,
+            'quest.ink.json'
+        ]);
+        storyFile = Gio.File.new_for_path(storyPath);
+    }
+    if (!storyFile.query_exists(null)) {
+        throw new Error(`${questName} file can't be found`);
+    }
+
     const [, storyBytes] = storyFile.load_contents(null);
 
     // Strip the BOM encoded with the JSON:
@@ -77,6 +95,10 @@ var QuestBus = GObject.registerClass({
         'quest-id': GObject.ParamSpec.string('quest-id', 'Quest ID', 'The quest ID',
             GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT_ONLY, ''),
 
+        'quest-story': GObject.ParamSpec.string('quest-story', 'Quest Story',
+            'The quest ink.json file path',
+            GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT_ONLY, ''),
+
         'has-ended': GObject.ParamSpec.boolean('has-ended', 'Has ended?',
             'Whether the quest has ended',
             GObject.ParamFlags.READWRITE, false),
@@ -109,7 +131,7 @@ var QuestBus = GObject.registerClass({
     }
 
     load() {
-        const questContent = _readQuestContent(this.quest_id);
+        const questContent = _readQuestContent(this.quest_id, this.quest_story);
         this._quest = new Quest();
         this._quest.setup(questContent);
     }
